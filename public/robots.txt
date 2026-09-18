@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /profile
+Disallow: /my-orders
+Disallow: /order-confirmation
+Disallow: /order-details
+Disallow: /track-order
+Disallow: /cart
+Disallow: /checkout
+Disallow: /login
+Disallow: /register
+Disallow: /verify-email
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://br30kadaknathfarms.com/sitemap.xml
