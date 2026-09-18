@@ -162,23 +162,23 @@ The following screenshots show the frontend interface and major application scre
 
 ### Screenshot 01
 
-![BR30 Kadaknath Farms - Screenshot 1](./public/screenshots/screenshot-1.png)
+![BR30 Kadaknath Farms - Screenshot 1](screenshots/screenshot-1.png)
 
 ### Screenshot 02
 
-![BR30 Kadaknath Farms - Screenshot 2](./public/screenshots/screenshot-2.png)
+![BR30 Kadaknath Farms - Screenshot 2](screenshots/screenshot-2.png)
 
 ### Screenshot 03
 
-![BR30 Kadaknath Farms - Screenshot 3](./public/screenshots/screenshot-3.png)
+![BR30 Kadaknath Farms - Screenshot 3](screenshots/screenshot-3.png)
 
 ### Screenshot 04
 
-![BR30 Kadaknath Farms - Screenshot 4](./public/screenshots/screenshot-4.png)
+![BR30 Kadaknath Farms - Screenshot 4](screenshots/screenshot-4.png)
 
 ### Screenshot 05
 
-![BR30 Kadaknath Farms - Screenshot 5](./public/screenshots/screenshot-5.png)
+![BR30 Kadaknath Farms - Screenshot 5](screenshots/screenshot-5.png)
 
 ---
 
@@ -186,23 +186,23 @@ The following screenshots show the frontend interface and major application scre
 
 ### Screenshot 06
 
-![BR30 Kadaknath Farms - Screenshot 6](./public/screenshots/screenshot-6.png)
+![BR30 Kadaknath Farms - Screenshot 6](screenshots/screenshot-6.png)
 
 ### Screenshot 07
 
-![BR30 Kadaknath Farms - Screenshot 7](./public/screenshots/screenshot-7.png)
+![BR30 Kadaknath Farms - Screenshot 7](screenshots/screenshot-7.png)
 
 ### Screenshot 08
 
-![BR30 Kadaknath Farms - Screenshot 8](./public/screenshots/screenshot-8.png)
+![BR30 Kadaknath Farms - Screenshot 8](screenshots/screenshot-8.png)
 
 ### Screenshot 09
 
-![BR30 Kadaknath Farms - Screenshot 9](./public/screenshots/screenshot-9.png)
+![BR30 Kadaknath Farms - Screenshot 9](screenshots/screenshot-9.png)
 
 ### Screenshot 10
 
-![BR30 Kadaknath Farms - Screenshot 10](./public/screenshots/screenshot-10.png)
+![BR30 Kadaknath Farms - Screenshot 10](screenshots/screenshot-10.png)
 
 ---
 
@@ -210,23 +210,23 @@ The following screenshots show the frontend interface and major application scre
 
 ### Screenshot 11
 
-![BR30 Kadaknath Farms - Screenshot 11](./public/screenshots/screenshot-11.png)
+![BR30 Kadaknath Farms - Screenshot 11](screenshots/screenshot-11.png)
 
 ### Screenshot 12
 
-![BR30 Kadaknath Farms - Screenshot 12](./public/screenshots/screenshot-12.png)
+![BR30 Kadaknath Farms - Screenshot 12](screenshots/screenshot-12.png)
 
 ### Screenshot 13
 
-![BR30 Kadaknath Farms - Screenshot 13](./public/screenshots/screenshot-13.png)
+![BR30 Kadaknath Farms - Screenshot 13](screenshots/screenshot-13.png)
 
 ### Screenshot 14
 
-![BR30 Kadaknath Farms - Screenshot 14](./public/screenshots/screenshot-14.png)
+![BR30 Kadaknath Farms - Screenshot 14](screenshots/screenshot-14.png)
 
 ### Screenshot 15
 
-![BR30 Kadaknath Farms - Screenshot 15](./public/screenshots/screenshot-15.png)
+![BR30 Kadaknath Farms - Screenshot 15](screenshots/screenshot-15.png)
 
 ---
 
@@ -234,19 +234,19 @@ The following screenshots show the frontend interface and major application scre
 
 ### Screenshot 16
 
-![BR30 Kadaknath Farms - Screenshot 16](./public/screenshots/screenshot-16.png)
+![BR30 Kadaknath Farms - Screenshot 16](screenshots/screenshot-16.png)
 
 ### Screenshot 17
 
-![BR30 Kadaknath Farms - Screenshot 17](./public/screenshots/screenshot-17.png)
+![BR30 Kadaknath Farms - Screenshot 17](screenshots/screenshot-17.png)
 
 ### Screenshot 18
 
-![BR30 Kadaknath Farms - Screenshot 18](./public/screenshots/screenshot-18.png)
+![BR30 Kadaknath Farms - Screenshot 18](screenshots/screenshot-18.png)
 
 ### Screenshot 19
 
-![BR30 Kadaknath Farms - Screenshot 19](./public/screenshots/screenshot-19.png)
+![BR30 Kadaknath Farms - Screenshot 19](screenshots/screenshot-19.png)
 
 ---
 
@@ -254,19 +254,19 @@ The following screenshots show the frontend interface and major application scre
 
 ### Screenshot 20
 
-![BR30 Kadaknath Farms - Screenshot 20](./public/screenshots/screenshot-20.png)
+![BR30 Kadaknath Farms - Screenshot 20](screenshots/screenshot-20.png)
 
 ### Screenshot 21
 
-![BR30 Kadaknath Farms - Screenshot 21](./public/screenshots/screenshot-21.png)
+![BR30 Kadaknath Farms - Screenshot 21](screenshots/screenshot-21.png)
 
 ### Screenshot 22
 
-![BR30 Kadaknath Farms - Screenshot 22](./public/screenshots/screenshot-22.png)
+![BR30 Kadaknath Farms - Screenshot 22](screenshots/screenshot-22.png)
 
 ### Screenshot 23
 
-![BR30 Kadaknath Farms - Screenshot 23](./public/screenshots/screenshot-23.png)
+![BR30 Kadaknath Farms - Screenshot 23](screenshots/screenshot-23.png)
 
 ---
 
@@ -796,7 +796,7 @@ Environment-specific values should be configured through environment variables r
 
 For project or website-related communication:
 
-**BR30 Kadaknath Farms**
+**BR30 Group**
 
 Support Email:
 
