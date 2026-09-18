@@ -3,95 +3,95 @@
 
   <!-- Main Website -->
   <url>
-    <loc>https://br30kadaknath.com/</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Products -->
   <url>
-    <loc>https://br30kadaknath.com/products</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/products</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/products/kadaknath-eggs</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/products/kadaknath-eggs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/products/kadaknath-chicken</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/products/kadaknath-chicken</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/products/kadaknath-chicks</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/products/kadaknath-chicks</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/products/hatching-eggs</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/products/hatching-eggs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/products/kadaknath-breeding-pair</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/products/kadaknath-breeding-pair</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/products/kadaknath-live-birds</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/products/kadaknath-live-birds</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Farm -->
   <url>
-    <loc>https://br30kadaknath.com/about-farm</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/about-farm</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Contact & FAQ -->
   <url>
-    <loc>https://br30kadaknath.com/contact</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/faq</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Legal -->
   <url>
-    <loc>https://br30kadaknath.com/privacy-policy</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/privacy-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/terms-of-service</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/terms-of-service</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/refund-policy</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/refund-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://br30kadaknath.com/shipping-policy</loc>
+    <loc>https://br-30-kadaknath-f.vercel.app/shipping-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

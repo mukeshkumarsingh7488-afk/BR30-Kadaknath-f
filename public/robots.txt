@@ -15,4 +15,4 @@ Disallow: /verify-email
 Disallow: /forgot-password
 Disallow: /reset-password
 
-Sitemap: https://br30kadaknath.com/sitemap.xml
+Sitemap: https://br-30-kadaknath-f.vercel.app/sitemap.xml
