@@ -15,4 +15,4 @@ Disallow: /verify-email
 Disallow: /forgot-password
 Disallow: /reset-password
 
-Sitemap: https://br30kadaknathfarms.com/sitemap.xml
+Sitemap: https://br30kadaknath.com/sitemap.xml
