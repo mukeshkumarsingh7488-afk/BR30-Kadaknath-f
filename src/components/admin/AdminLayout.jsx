@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import AdminSidebar from "./AdminSidebar";
@@ -18,6 +18,16 @@ const getSavedSettings = () => {
   }
 };
 
+const getDeviceTheme = () => {
+  if (typeof window === "undefined") return "dark";
+
+  try {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+};
+
 const AdminLayout = () => {
   const savedSettings = getSavedSettings();
 
@@ -27,15 +37,65 @@ const AdminLayout = () => {
     return savedSettings.theme || localStorage.getItem("br30-admin-theme") || "dark";
   });
 
+  const [systemTheme, setSystemTheme] = useState(getDeviceTheme);
+
   const [sidebarMode, setSidebarMode] = useState(() => {
-    return savedSettings.sidebarMode || "normal";
+    return savedSettings.sidebarMode || localStorage.getItem("br30-admin-sidebar-mode") || "normal";
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const updateDeviceTheme = () => {
+      setSystemTheme(mediaQuery.matches ? "dark" : "light");
+    };
+
+    updateDeviceTheme();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateDeviceTheme);
+
+      return () => {
+        mediaQuery.removeEventListener("change", updateDeviceTheme);
+      };
+    }
+
+    mediaQuery.addListener(updateDeviceTheme);
+
+    return () => {
+      mediaQuery.removeListener(updateDeviceTheme);
+    };
+  }, []);
+
+  const appliedTheme = theme === "system" ? systemTheme : theme;
 
   const toggleTheme = () => {
     setTheme((currentTheme) => {
       const nextTheme = currentTheme === "dark" ? "light" : "dark";
 
       localStorage.setItem("br30-admin-theme", nextTheme);
+
+      try {
+        const currentSettings = JSON.parse(localStorage.getItem("br30-admin-settings") || "{}");
+
+        localStorage.setItem(
+          "br30-admin-settings",
+          JSON.stringify({
+            ...currentSettings,
+            theme: nextTheme,
+          })
+        );
+      } catch {
+        localStorage.setItem(
+          "br30-admin-settings",
+          JSON.stringify({
+            theme: nextTheme,
+            sidebarMode,
+          })
+        );
+      }
 
       return nextTheme;
     });
@@ -47,7 +107,6 @@ const AdminLayout = () => {
     const nextMode = validModes.includes(mode) ? mode : "normal";
 
     setSidebarMode(nextMode);
-
     setSidebarOpen(false);
   };
 
@@ -56,11 +115,11 @@ const AdminLayout = () => {
   const isRailSidebarMode = sidebarMode === "hover" || sidebarMode === "compact";
 
   return (
-    <div className={`admin-shell admin-theme-${theme} admin-sidebar-mode-${sidebarMode}`}>
+    <div className={`admin-shell admin-theme-${appliedTheme} admin-sidebar-mode-${sidebarMode}`}>
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} sidebarMode={sidebarMode} />
 
       <div className={`admin-main ${isFullSidebarMode ? "admin-main-full-sidebar" : isRailSidebarMode ? "admin-main-rail-sidebar" : "admin-main-no-sidebar"}`}>
-        <AdminNavbar theme={theme} onToggleTheme={toggleTheme} onMenuClick={() => setSidebarOpen(true)} sidebarMode={sidebarMode} />
+        <AdminNavbar theme={appliedTheme} onToggleTheme={toggleTheme} onMenuClick={() => setSidebarOpen(true)} sidebarMode={sidebarMode} />
 
         <main className="admin-content">
           <Outlet

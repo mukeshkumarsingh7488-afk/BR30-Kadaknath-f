@@ -40,11 +40,18 @@ const AdminNavbar = ({ theme, onToggleTheme, onMenuClick, sidebarMode = "normal"
           <span className="admin-notification-dot" />
         </button>
 
-        <button type="button" className="admin-theme-button" onClick={onToggleTheme} title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
-          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        {/* 
+<button
+  type="button"
+  className="admin-theme-button"
+  onClick={onToggleTheme}
+  title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+>
+  {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
 
-          <span>{theme === "dark" ? "Light" : "Dark"}</span>
-        </button>
+  <span>{theme === "dark" ? "Light" : "Dark"}</span>
+</button>
+*/}
 
         <button type="button" className="admin-navbar-user" onClick={() => navigate("/profile")} title="View Profile">
           <div className="admin-navbar-avatar">{user?.name?.charAt(0)?.toUpperCase() || "A"}</div>

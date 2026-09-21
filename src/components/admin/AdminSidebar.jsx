@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   LayoutDashboard,
   Plus,
@@ -51,6 +53,22 @@ const getStoredUser = () => {
 const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
   const navigate = useNavigate();
   const user = getStoredUser();
+
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth <= 900 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 900);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const isAdmin = user?.role === "admin";
 
@@ -288,7 +306,7 @@ const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
   };
 
   const handleLinkClick = () => {
-    if (isHamburger || window.innerWidth <= 900) {
+    if (isHamburger || isMobile) {
       onClose?.();
     }
   };
@@ -321,7 +339,7 @@ const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
 
   return (
     <>
-      {(isHamburger || window.innerWidth <= 900) && isOpen && <div className="admin-sidebar-overlay" onClick={onClose} />}
+      {(isHamburger || isMobile) && isOpen && <div className="admin-sidebar-overlay" onClick={onClose} />}
 
       <aside className={`admin-sidebar ${isOpen ? "admin-sidebar-open" : ""} ${isNormal ? "admin-sidebar-normal" : isHamburger ? "admin-sidebar-hamburger" : isHover ? "admin-sidebar-hover" : "admin-sidebar-compact"}`}>
         <div className="admin-brand">
@@ -410,7 +428,7 @@ const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
           .admin-user-mini-info{min-width:0;display:flex;flex-direction:column;overflow:hidden}
           .admin-user-mini-info strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
           .admin-user-mini-info span{margin-top:3px;font-size:11px;color:var(--admin-primary);text-transform:capitalize}
-          .admin-sidebar-scroll{min-height:0;overflow-y:auto;overflow-x:visible;padding-right:3px;scrollbar-width:thin}
+          .admin-sidebar-scroll{min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:3px;scrollbar-width:thin}
           .admin-sidebar-scroll::-webkit-scrollbar{width:5px}
           .admin-sidebar-scroll::-webkit-scrollbar-thumb{background:var(--admin-border);border-radius:10px}
           .admin-nav-section{margin-bottom:24px}
@@ -438,7 +456,7 @@ const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
           .admin-sidebar-hover:hover .admin-user-mini{justify-content:flex-start;padding:13px}
           .admin-sidebar-hover:hover .admin-nav-title{height:auto;padding:0 10px 9px;margin:0;opacity:1}
           .admin-sidebar-hover:hover .admin-nav-link,.admin-sidebar-hover:hover .admin-logout-button{justify-content:flex-start;padding-left:12px;padding-right:12px}
-          .admin-sidebar-compact .admin-sidebar-scroll,.admin-sidebar-hover:not(:hover) .admin-sidebar-scroll{overflow:visible}
+          .admin-sidebar-compact .admin-sidebar-scroll,.admin-sidebar-hover:not(:hover) .admin-sidebar-scroll{overflow-y:auto;overflow-x:hidden}
           @media(max-width:900px){
             .admin-sidebar-normal,.admin-sidebar-hover,.admin-sidebar-compact{transform:translateX(-100%);box-shadow:20px 0 50px rgba(0,0,0,.25);width:270px;padding:22px 16px}
             .admin-sidebar-normal.admin-sidebar-open,.admin-sidebar-hover.admin-sidebar-open,.admin-sidebar-compact.admin-sidebar-open{transform:translateX(0)}

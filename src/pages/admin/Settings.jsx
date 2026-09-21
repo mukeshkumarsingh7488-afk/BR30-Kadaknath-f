@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Bell, Check, ChevronDown, ChevronRight, CircleUserRound, Database, LockKeyhole, Palette, RotateCcw, Save, Settings as SettingsIcon, ShieldCheck, SlidersHorizontal, UsersRound, X } from "lucide-react";
+import { Bell, BellRing, Check, ChevronDown, ChevronRight, CircleUserRound, ClipboardList, Database, DatabaseBackup, FileWarning, LockKeyhole, Palette, Plug, RotateCcw, Save, Settings as SettingsIcon, Settings2, ShieldCheck, SlidersHorizontal, UsersRound, Wrench, X } from "lucide-react";
 
 import apiRequest from "../../api/api";
 import { showConfirm, showError, showSuccess } from "../../utils/sweetAlert";
@@ -91,19 +91,175 @@ const defaultPermissions = {
   security: ["dashboard", "biosecurity"],
 };
 
+const notificationPages = [
+  {
+    key: "dashboard",
+    title: "Dashboard",
+    description: "Notifications related to admin dashboard activity.",
+  },
+  {
+    key: "orders",
+    title: "Orders",
+    description: "New order and order status notifications.",
+  },
+  {
+    key: "refunds",
+    title: "Refunds",
+    description: "Refund request and refund status notifications.",
+  },
+  {
+    key: "products",
+    title: "Products",
+    description: "Product stock and product management notifications.",
+  },
+  {
+    key: "customers-staff",
+    title: "Customers & Staff",
+    description: "Customer and staff activity notifications.",
+  },
+
+  {
+    key: "farm-dashboard",
+    title: "Farm Dashboard",
+    description: "Farm overview and important farm alerts.",
+  },
+  {
+    key: "farms",
+    title: "Create Farm",
+    description: "Farm creation and farm management notifications.",
+  },
+  {
+    key: "sheds",
+    title: "Shed Management",
+    description: "Shed activity and management notifications.",
+  },
+  {
+    key: "shed-maintenance",
+    title: "Shed Maintenance",
+    description: "Shed maintenance reminders and alerts.",
+  },
+  {
+    key: "batches",
+    title: "Batches",
+    description: "Batch creation, updates and batch activity notifications.",
+  },
+  {
+    key: "chicks-inward",
+    title: "Chicks Inward",
+    description: "Chicks inward and stock entry notifications.",
+  },
+  {
+    key: "bird-stock",
+    title: "Bird Stock",
+    description: "Bird stock and inventory notifications.",
+  },
+  {
+    key: "mortality",
+    title: "Farm Mortality",
+    description: "Bird mortality entry and alert notifications.",
+  },
+  {
+    key: "weight-growth",
+    title: "Weight & Growth",
+    description: "Weight and growth tracking notifications.",
+  },
+  {
+    key: "egg-collection",
+    title: "Egg Collection",
+    description: "Egg collection and production notifications.",
+  },
+  {
+    key: "feed-inventory",
+    title: "Feed Inventory",
+    description: "Feed stock and inventory alerts.",
+  },
+  {
+    key: "feed-consumption",
+    title: "Feed Consumption",
+    description: "Feed consumption and usage notifications.",
+  },
+  {
+    key: "medicine-vaccine",
+    title: "Medicine & Vaccine",
+    description: "Medicine and vaccine stock notifications.",
+  },
+  {
+    key: "vaccination-schedule",
+    title: "Vaccination Schedule",
+    description: "Upcoming and due vaccination notifications.",
+  },
+  {
+    key: "veterinary-logs",
+    title: "Veterinary Logs",
+    description: "Veterinary activity and health log notifications.",
+  },
+  {
+    key: "water-quality",
+    title: "Water Quality",
+    description: "Water quality check and alert notifications.",
+  },
+  {
+    key: "staff-attendance",
+    title: "Staff Attendance",
+    description: "Staff attendance and absence notifications.",
+  },
+  {
+    key: "tasks",
+    title: "Farm Tasks",
+    description: "Task assignment, due and overdue notifications.",
+  },
+  {
+    key: "payroll",
+    title: "Payroll",
+    description: "Payroll processing and payment notifications.",
+  },
+  {
+    key: "biosecurity",
+    title: "Biosecurity",
+    description: "Biosecurity alerts and important farm warnings.",
+  },
+  {
+    key: "sales",
+    title: "Sales & Billing",
+    description: "Sales, billing and payment notifications.",
+  },
+  {
+    key: "farm-reports",
+    title: "Farm Reports",
+    description: "Farm report generation and report activity notifications.",
+  },
+  {
+    key: "farm-expenses",
+    title: "Farm Expenses",
+    description: "Expense entry and expense-related notifications.",
+  },
+
+  {
+    key: "staff-control",
+    title: "Staff Control",
+    description: "Staff management and access activity notifications.",
+  },
+  {
+    key: "settings",
+    title: "Settings",
+    description: "Important admin settings and configuration notifications.",
+  },
+];
+
+const defaultNotifications = notificationPages.reduce((acc, page) => {
+  acc[page.key] = false;
+  return acc;
+}, {});
+
 const defaultSettings = {
-  theme: "dark",
+  theme: "system",
   sidebarMode: "normal",
   defaultDashboard: "farm",
   dateFormat: "DD/MM/YYYY",
   timeFormat: "12h",
   currency: "INR",
   itemsPerPage: "10",
-  orderNotifications: true,
-  farmAlerts: true,
-  stockAlerts: true,
-  maintenanceAlerts: true,
-  taskReminders: true,
+  notifications: defaultNotifications,
   emailNotifications: true,
 };
 
@@ -138,13 +294,25 @@ const Settings = () => {
   const sidebarMode = outletContext?.sidebarMode || "normal";
   const setSidebarMode = outletContext?.setSidebarMode || (() => {});
 
-  const [activeTab, setActiveTab] = useState("appearance");
+  const settingsTabs = ["appearance", "general", "notifications", "permissions", "users", "security", "system", "farm-configuration", "alert-rules", "data-backup", "audit-logs", "integrations"];
+
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem("br30-admin-settings-active-tab");
+
+    return settingsTabs.includes(savedTab) ? savedTab : "appearance";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("br30-admin-settings-active-tab", activeTab);
+  }, [activeTab]);
+
   const [settings, setSettings] = useState(defaultSettings);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const [permissions, setPermissions] = useState(defaultPermissions);
+  const [savedPermissions, setSavedPermissions] = useState(defaultPermissions);
   const [permissionRole, setPermissionRole] = useState("staff");
   const [permissionsLoading, setPermissionsLoading] = useState(false);
   const [permissionsSaving, setPermissionsSaving] = useState(false);
@@ -177,19 +345,25 @@ const Settings = () => {
     try {
       const storedSettings = JSON.parse(localStorage.getItem("br30-admin-settings") || "{}");
 
+      const savedTheme = storedSettings.theme || localStorage.getItem("br30-admin-theme") || "dark";
+
+      const savedSidebarMode = storedSettings.sidebarMode || localStorage.getItem("br30-admin-sidebar-mode") || "normal";
+
       const mergedSettings = {
         ...defaultSettings,
         ...storedSettings,
+        theme: savedTheme,
+        sidebarMode: savedSidebarMode,
       };
 
       setSettings(mergedSettings);
 
-      if (mergedSettings.theme && mergedSettings.theme !== theme) {
-        setTheme(mergedSettings.theme);
+      if (savedTheme !== theme) {
+        setTheme(savedTheme);
       }
 
-      if (mergedSettings.sidebarMode && mergedSettings.sidebarMode !== sidebarMode) {
-        setSidebarMode(mergedSettings.sidebarMode);
+      if (savedSidebarMode !== sidebarMode) {
+        setSidebarMode(savedSidebarMode);
       }
     } catch {
       setSettings(defaultSettings);
@@ -212,15 +386,20 @@ const Settings = () => {
     try {
       setPermissionsLoading(true);
 
-      const response = await apiRequest.get("/admin/permissions");
+      const response = await apiRequest("/admin/permissions", {
+        method: "GET",
+      });
 
-      const serverPermissions = response?.data?.permissions;
+      const serverPermissions = response?.permissions;
 
       if (serverPermissions && typeof serverPermissions === "object") {
-        setPermissions({
+        const mergedPermissions = {
           ...defaultPermissions,
           ...serverPermissions,
-        });
+        };
+
+        setPermissions(mergedPermissions);
+        setSavedPermissions(mergedPermissions);
       }
     } catch (err) {
       console.error("Permissions fetch error:", err);
@@ -237,33 +416,50 @@ const Settings = () => {
       ...current,
       [key]: value,
     }));
+  };
 
-    if (key === "theme") {
-      setTheme(value);
-      localStorage.setItem("br30-admin-theme", value);
-    }
+  const toggleNotification = (key) => {
+    setSaved(false);
+    setError("");
 
-    if (key === "sidebarMode") {
-      setSidebarMode(value);
-    }
+    setSettings((current) => ({
+      ...current,
+      notifications: {
+        ...(current.notifications || defaultNotifications),
+        [key]: !(current.notifications?.[key] ?? false),
+      },
+    }));
   };
 
   const handleSave = async () => {
+    const result = await showConfirm({
+      title: "Save Settings?",
+      text: "Are you sure you want to save these admin settings?",
+      confirmText: "Yes, Save",
+      cancelText: "Cancel",
+    });
+
+    if (!result?.isConfirmed) {
+      return;
+    }
+
     try {
       setSaving(true);
       setError("");
 
       const settingsToSave = {
         ...settings,
-        theme: theme || settings.theme,
-        sidebarMode: sidebarMode || settings.sidebarMode || "normal",
+        theme: settings.theme || "dark",
+        sidebarMode: settings.sidebarMode || "normal",
       };
 
       localStorage.setItem("br30-admin-settings", JSON.stringify(settingsToSave));
 
-      if (settingsToSave.theme) {
-        localStorage.setItem("br30-admin-theme", settingsToSave.theme);
-      }
+      localStorage.setItem("br30-admin-theme", settingsToSave.theme);
+      localStorage.setItem("br30-admin-sidebar-mode", settingsToSave.sidebarMode);
+
+      setTheme(settingsToSave.theme);
+      setSidebarMode(settingsToSave.sidebarMode);
 
       setSettings(settingsToSave);
       setSaved(true);
@@ -279,6 +475,7 @@ const Settings = () => {
       showSuccess("Settings saved successfully.");
     } catch (err) {
       console.error("Settings save error:", err);
+
       setError("Unable to save settings.");
       showError("Unable to save settings.");
     } finally {
@@ -287,13 +484,18 @@ const Settings = () => {
   };
 
   const handleReset = async () => {
-    const confirmed = await showConfirm("Reset all admin settings to default?");
+    const result = await showConfirm({
+      title: "Reset Admin Settings?",
+      text: "All admin settings will be restored to their default values.",
+      confirmText: "Reset",
+      cancelText: "Cancel",
+    });
 
-    if (!confirmed) {
+    if (!result?.isConfirmed) {
       return;
     }
 
-    const resetTheme = "dark";
+    const resetTheme = "system";
     const resetSidebarMode = "normal";
 
     const resetSettings = {
@@ -309,7 +511,7 @@ const Settings = () => {
     setError("");
 
     localStorage.setItem("br30-admin-theme", resetTheme);
-
+    localStorage.setItem("br30-admin-sidebar-mode", resetSidebarMode);
     localStorage.setItem("br30-admin-settings", JSON.stringify(resetSettings));
 
     showSuccess("Admin settings reset successfully.");
@@ -366,20 +568,49 @@ const Settings = () => {
       return;
     }
 
+    const oldPermissions = Array.isArray(savedPermissions[permissionRole]) ? savedPermissions[permissionRole] : [];
+
+    const newPermissions = Array.isArray(currentRolePermissions) ? currentRolePermissions : [];
+
+    const addedPermissions = newPermissions.filter((permission) => !oldPermissions.includes(permission));
+
+    const removedPermissions = oldPermissions.filter((permission) => !newPermissions.includes(permission));
+
+    const result = await showConfirm({
+      title: "Save Permissions?",
+      text: `Save ${permissionRole.toUpperCase()} permission changes?`,
+      confirmText: "Yes, Save",
+      cancelText: "Cancel",
+    });
+
+    if (!result?.isConfirmed) {
+      return;
+    }
+
     try {
       setPermissionsSaving(true);
 
-      await apiRequest.put(`/admin/permissions/${permissionRole}`, {
-        permissions: currentRolePermissions,
+      await apiRequest(`/admin/permissions/${permissionRole}`, {
+        method: "PUT",
+        body: {
+          permissions: newPermissions,
+        },
       });
 
-      showSuccess(`${permissionRole.toUpperCase()} permissions updated successfully.`);
+      setSavedPermissions((current) => ({
+        ...current,
+        [permissionRole]: [...newPermissions],
+      }));
+
+      const roleLabel = permissionRole === "fm" ? "FM" : permissionRole.charAt(0).toUpperCase() + permissionRole.slice(1);
+
+      await showSuccess("Permissions Saved Successfully", `${roleLabel}\n\nPreviously: ${oldPermissions.length} permissions\nNew permissions added: ${addedPermissions.length}\nPermissions removed: ${removedPermissions.length}\nTotal permissions: ${newPermissions.length}`);
 
       await fetchPermissions();
     } catch (err) {
       console.error("Permissions save error:", err);
 
-      showError(err?.response?.data?.message || "Unable to update permissions.");
+      showError(err?.data?.message || err?.message || "Unable to update permissions.");
     } finally {
       setPermissionsSaving(false);
     }
@@ -478,12 +709,12 @@ const Settings = () => {
         </div>
 
         <div className="farm-settings-actions">
-          <button type="button" className="farm-settings-reset" onClick={handleReset}>
+          <button type="button" className="farm-settings-reset" onClick={handleReset} disabled={activeTab === "permissions"}>
             <RotateCcw size={16} />
             Reset
           </button>
 
-          <button type="button" className="farm-settings-save" onClick={handleSave} disabled={saving}>
+          <button type="button" className="farm-settings-save" onClick={handleSave} disabled={saving || activeTab === "permissions"}>
             {saving ? (
               <>
                 <span className="farm-settings-spinner" />
@@ -549,6 +780,36 @@ const Settings = () => {
             <span>System</span>
             <ChevronRight size={15} />
           </button>
+
+          <button type="button" className={activeTab === "farm-configuration" ? "active" : ""} onClick={() => setActiveTab("farm-configuration")}>
+            <Settings2 size={17} />
+            <span>Farm Configuration</span>
+            <ChevronRight size={15} />
+          </button>
+
+          <button type="button" className={activeTab === "alert-rules" ? "active" : ""} onClick={() => setActiveTab("alert-rules")}>
+            <BellRing size={17} />
+            <span>Alert Rules</span>
+            <ChevronRight size={15} />
+          </button>
+
+          <button type="button" className={activeTab === "data-backup" ? "active" : ""} onClick={() => setActiveTab("data-backup")}>
+            <DatabaseBackup size={17} />
+            <span>Data & Backup</span>
+            <ChevronRight size={15} />
+          </button>
+
+          <button type="button" className={activeTab === "audit-logs" ? "active" : ""} onClick={() => setActiveTab("audit-logs")}>
+            <ClipboardList size={17} />
+            <span>Audit Logs</span>
+            <ChevronRight size={15} />
+          </button>
+
+          <button type="button" className={activeTab === "integrations" ? "active" : ""} onClick={() => setActiveTab("integrations")}>
+            <Plug size={17} />
+            <span>Integrations</span>
+            <ChevronRight size={15} />
+          </button>
         </aside>
 
         <div className="farm-settings-content">
@@ -570,9 +831,10 @@ const Settings = () => {
                   </div>
 
                   <div className="farm-settings-control">
-                    <select value={theme || settings.theme} onChange={(e) => updateSetting("theme", e.target.value)}>
+                    <select value={settings.theme} onChange={(e) => updateSetting("theme", e.target.value)}>
                       <option value="dark">Dark</option>
                       <option value="light">Light</option>
+                      <option value="system">Device Default</option>
                     </select>
                     <ChevronDown size={15} />
                   </div>
@@ -588,7 +850,7 @@ const Settings = () => {
 
                   <div className="farm-settings-sidebar-options">
                     {sidebarStyles.map((style) => {
-                      const active = (sidebarMode || settings.sidebarMode) === style.key;
+                      const active = settings.sidebarMode === style.key;
 
                       return (
                         <button key={style.key} type="button" className={`farm-sidebar-option ${active ? "active" : ""}`} onClick={() => updateSetting("sidebarMode", style.key)}>
@@ -716,43 +978,12 @@ const Settings = () => {
                 <Bell size={19} />
                 <div>
                   <h2>Notifications</h2>
-                  <p>Manage admin alerts and notification preferences.</p>
+                  <p>Control notifications for every admin sidebar page.</p>
                 </div>
               </div>
 
               <div className="farm-settings-card">
-                {[
-                  {
-                    key: "orderNotifications",
-                    title: "Order Notifications",
-                    description: "Receive alerts when new orders are placed.",
-                  },
-                  {
-                    key: "farmAlerts",
-                    title: "Farm Alerts",
-                    description: "Receive important farm operation alerts.",
-                  },
-                  {
-                    key: "stockAlerts",
-                    title: "Stock Alerts",
-                    description: "Receive alerts for low or critical stock.",
-                  },
-                  {
-                    key: "maintenanceAlerts",
-                    title: "Maintenance Alerts",
-                    description: "Receive reminders for shed maintenance.",
-                  },
-                  {
-                    key: "taskReminders",
-                    title: "Task Reminders",
-                    description: "Receive reminders for assigned farm tasks.",
-                  },
-                  {
-                    key: "emailNotifications",
-                    title: "Email Notifications",
-                    description: "Allow system notification emails.",
-                  },
-                ].map((item, index, array) => (
+                {notificationPages.map((item, index, array) => (
                   <div key={item.key}>
                     <div className="farm-settings-row">
                       <div>
@@ -760,7 +991,7 @@ const Settings = () => {
                         <span>{item.description}</span>
                       </div>
 
-                      <button type="button" className={`farm-toggle ${settings[item.key] ? "active" : ""}`} onClick={() => updateSetting(item.key, !settings[item.key])} aria-label={`Toggle ${item.title}`}>
+                      <button type="button" className={`farm-toggle ${settings.notifications?.[item.key] ? "active" : ""}`} onClick={() => toggleNotification(item.key)} aria-label={`Toggle ${item.title} notifications`} aria-pressed={settings.notifications?.[item.key] ? "true" : "false"}>
                         <span />
                       </button>
                     </div>
@@ -768,6 +999,19 @@ const Settings = () => {
                     {index !== array.length - 1 && <div className="farm-settings-divider" />}
                   </div>
                 ))}
+              </div>
+
+              <div className="farm-settings-card" style={{ marginTop: "14px" }}>
+                <div className="farm-settings-row">
+                  <div>
+                    <strong>Email Notifications</strong>
+                    <span>Allow notification emails from the admin system.</span>
+                  </div>
+
+                  <button type="button" className={`farm-toggle ${settings.emailNotifications ? "active" : ""}`} onClick={() => updateSetting("emailNotifications", !settings.emailNotifications)} aria-label="Toggle Email Notifications" aria-pressed={settings.emailNotifications ? "true" : "false"}>
+                    <span />
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -961,6 +1205,176 @@ const Settings = () => {
               </div>
             </div>
           )}
+
+          {activeTab === "farm-configuration" && (
+            <div className="farm-settings-section">
+              <div className="farm-settings-section-title">
+                <Settings2 size={19} />
+                <div>
+                  <h2>Farm Configuration</h2>
+                  <p>Configure farm-wide units, defaults and operational preferences.</p>
+                </div>
+              </div>
+
+              <div className="farm-settings-card">
+                <div className="farm-settings-info-box">
+                  <Wrench size={20} />
+
+                  <div>
+                    <strong>Farm Configuration</strong>
+                    <span>This section will control farm units, production defaults, batch settings, mortality settings and other farm-wide configurations.</span>
+                  </div>
+                </div>
+
+                <div className="farm-settings-divider" />
+
+                <div className="farm-settings-row">
+                  <div>
+                    <strong>Configuration Status</strong>
+                    <span>Advanced farm configuration will be available here.</span>
+                  </div>
+
+                  <span className="farm-system-badge">Coming Soon</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "alert-rules" && (
+            <div className="farm-settings-section">
+              <div className="farm-settings-section-title">
+                <BellRing size={19} />
+                <div>
+                  <h2>Alert Rules</h2>
+                  <p>Define thresholds and rules for important farm alerts.</p>
+                </div>
+              </div>
+
+              <div className="farm-settings-card">
+                <div className="farm-settings-info-box">
+                  <FileWarning size={20} />
+
+                  <div>
+                    <strong>Alert Rules</strong>
+                    <span>Future alert rules will manage low stock, mortality thresholds, maintenance reminders, vaccination alerts and other operational warnings.</span>
+                  </div>
+                </div>
+
+                <div className="farm-settings-divider" />
+
+                <div className="farm-settings-row">
+                  <div>
+                    <strong>Rule Engine</strong>
+                    <span>Custom alert thresholds and automated rules will be configured here.</span>
+                  </div>
+
+                  <span className="farm-system-badge">Coming Soon</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "data-backup" && (
+            <div className="farm-settings-section">
+              <div className="farm-settings-section-title">
+                <DatabaseBackup size={19} />
+                <div>
+                  <h2>Data & Backup</h2>
+                  <p>Manage farm data, exports and future backup operations.</p>
+                </div>
+              </div>
+
+              <div className="farm-settings-card">
+                <div className="farm-settings-info-box">
+                  <DatabaseBackup size={20} />
+
+                  <div>
+                    <strong>Data Management</strong>
+                    <span>This section will handle database backups, data exports, imports, backup history and data retention settings.</span>
+                  </div>
+                </div>
+
+                <div className="farm-settings-divider" />
+
+                <div className="farm-settings-row">
+                  <div>
+                    <strong>Backup System</strong>
+                    <span>Automated and manual backup controls will be added here.</span>
+                  </div>
+
+                  <span className="farm-system-badge">Coming Soon</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "audit-logs" && (
+            <div className="farm-settings-section">
+              <div className="farm-settings-section-title">
+                <ClipboardList size={19} />
+                <div>
+                  <h2>Audit Logs</h2>
+                  <p>Track important admin and farm system activities.</p>
+                </div>
+              </div>
+
+              <div className="farm-settings-card">
+                <div className="farm-settings-info-box">
+                  <ClipboardList size={20} />
+
+                  <div>
+                    <strong>Activity Tracking</strong>
+                    <span>Future audit logs will record login activity, permission changes, order changes, farm data changes and important administrative actions.</span>
+                  </div>
+                </div>
+
+                <div className="farm-settings-divider" />
+
+                <div className="farm-settings-row">
+                  <div>
+                    <strong>Audit History</strong>
+                    <span>Searchable admin activity history will be available here.</span>
+                  </div>
+
+                  <span className="farm-system-badge">Coming Soon</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "integrations" && (
+            <div className="farm-settings-section">
+              <div className="farm-settings-section-title">
+                <Plug size={19} />
+                <div>
+                  <h2>Integrations</h2>
+                  <p>Manage external services connected to Farm OS.</p>
+                </div>
+              </div>
+
+              <div className="farm-settings-card">
+                <div className="farm-settings-info-box">
+                  <Plug size={20} />
+
+                  <div>
+                    <strong>External Integrations</strong>
+                    <span>Future integrations can include email, WhatsApp, SMS, payment services, cloud storage and other external APIs.</span>
+                  </div>
+                </div>
+
+                <div className="farm-settings-divider" />
+
+                <div className="farm-settings-row">
+                  <div>
+                    <strong>Integration Manager</strong>
+                    <span>Connected services and API configurations will be managed here.</span>
+                  </div>
+
+                  <span className="farm-system-badge">Coming Soon</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1019,7 +1433,7 @@ const Settings = () => {
         .farm-settings-reset:hover{border-color:var(--admin-primary);color:var(--admin-primary)}
         .farm-settings-save{border:1px solid var(--admin-primary);background:var(--admin-primary);color:#071006;min-width:135px}
         .farm-settings-save:hover{filter:brightness(1.04)}
-        .farm-settings-save:disabled{opacity:.65;cursor:not-allowed}
+        .farm-settings-reset:disabled,.farm-settings-save:disabled{opacity:.65;cursor:not-allowed}
         .farm-settings-spinner{width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:farm-settings-spin .7s linear infinite}
         @keyframes farm-settings-spin{to{transform:rotate(360deg)}}
         .farm-settings-error{margin-bottom:18px;padding:12px 14px;border:1px solid rgba(255,93,108,.25);background:rgba(255,93,108,.08);color:var(--admin-danger);border-radius:10px;font-size:13px}
@@ -1039,7 +1453,7 @@ const Settings = () => {
         .farm-settings-row{min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:20px}
         .farm-settings-row>div:first-child{min-width:0}
         .farm-settings-row strong{display:block;color:var(--admin-text);font-size:13px}
-        .farm-settings-row span{display:block;margin-top:4px;color:var(--admin-muted);font-size:12px;line-height:1.45}
+        .farm-settings-row>div:first-child span{display:block;margin-top:4px;color:var(--admin-muted);font-size:12px;line-height:1.45}
         .farm-settings-control{position:relative;min-width:190px;display:flex;align-items:center}
         .farm-settings-control select{appearance:none;width:100%;height:38px;border:1px solid var(--admin-border);border-radius:9px;background:var(--admin-surface-2);color:var(--admin-text);padding:0 34px 0 11px;font:inherit;font-size:12px;outline:none;cursor:pointer}
         .farm-settings-control select:focus{border-color:var(--admin-primary)}
@@ -1059,6 +1473,11 @@ const Settings = () => {
         .farm-preview-sidebar span{display:block;height:6px;border-radius:3px;background:var(--admin-muted);opacity:.55;margin-bottom:8px}
         .farm-preview-sidebar span:first-child{background:var(--admin-primary);opacity:1}
         .farm-preview-content{flex:1;padding:11px}
+        .farm-toggle{position:relative;width:46px;height:25px;flex:0 0 auto;border:1px solid var(--admin-border);border-radius:999px;background:var(--admin-surface-2);padding:0;margin:0;cursor:pointer;transition:.2s ease;box-sizing:border-box;display:block}
+        .farm-toggle span{display:block;position:absolute;top:50%;left:3px;width:17px;height:17px;margin:0;padding:0;border-radius:50%;background:var(--admin-muted);transform:translateY(-50%);transition:left .2s ease,background .2s ease;box-sizing:border-box}
+        .farm-toggle.active{border-color:var(--admin-primary);background:var(--admin-primary)}
+        .farm-toggle.active span{left:24px;margin:0;background:#fff}
+        .farm-toggle:focus-visible{outline:2px solid var(--admin-primary);outline-offset:2px}
         .farm-preview-content i{display:block;height:7px;border-radius:4px;background:var(--admin-border);margin-bottom:9px}
         .farm-preview-content i:first-child{width:80%;background:var(--admin-primary-soft)}
         .farm-preview-topbar{width:100%;height:100%;padding:10px;display:flex;align-items:flex-start;gap:10px}
