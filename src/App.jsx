@@ -87,6 +87,13 @@ import FarmReports from "./pages/admin/farm/FarmReports";
 import FarmExpenses from "./pages/admin/farm/FarmExpenses";
 import CreateFarms from "./pages/admin/farm/CreateFarms";
 import Settings from "./pages/admin/Settings";
+import WhatsNew from "./pages/admin/WhatsNew";
+
+// =========================
+// WHAT'S NEW
+// =========================
+import { WhatsNewProvider } from "./context/WhatsNewContext";
+import WhatsNewOverlay from "./components/whatsNew/WhatsNewOverlay";
 
 function App() {
   const location = useLocation();
@@ -97,266 +104,280 @@ function App() {
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
-    <>
-      {/* =========================
-          CUSTOMER NAVBAR
-      ========================= */}
-      {!isAdminRoute && <Navbar />}
+    <WhatsNewProvider>
+      <>
+        {/* =========================
+            CUSTOMER NAVBAR
+        ========================= */}
+        {!isAdminRoute && <Navbar />}
 
-      <ScrollToTop />
+        <ScrollToTop />
 
-      <main>
-        <Routes>
-          {/* =====================================================
-              CUSTOMER WEBSITE
-          ===================================================== */}
+        <main>
+          <Routes>
+            {/* =====================================================
+                CUSTOMER WEBSITE
+            ===================================================== */}
 
-          <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home />} />
 
-          <Route path="/products" element={<Products />} />
+            <Route path="/products" element={<Products />} />
 
-          <Route path="/products/:slug" element={<ProductDetails />} />
+            <Route path="/products/:slug" element={<ProductDetails />} />
 
-          <Route path="/about-farm" element={<AboutFarm />} />
+            <Route path="/about-farm" element={<AboutFarm />} />
 
-          <Route path="/owner-farm" element={<OwnerAbout />} />
+            <Route path="/owner-farm" element={<OwnerAbout />} />
 
-          <Route path="/cart" element={<Cart />} />
+            <Route path="/cart" element={<Cart />} />
 
-          <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout" element={<Checkout />} />
 
-          <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<Contact />} />
 
-          {/* =====================================================
-              CUSTOMER AUTHENTICATION
-          ===================================================== */}
+            {/* =====================================================
+                CUSTOMER AUTHENTICATION
+            ===================================================== */}
 
-          <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Register />} />
 
-          <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
 
-          <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login />} />
 
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-          <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<Profile />} />
 
-          {/* =====================================================
-              CUSTOMER ORDERS
-          ===================================================== */}
+            {/* =====================================================
+                CUSTOMER ORDERS
+            ===================================================== */}
 
-          <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/my-orders" element={<MyOrders />} />
 
-          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
-          <Route path="/track-order" element={<TrackOrder />} />
+            <Route path="/track-order" element={<TrackOrder />} />
 
-          <Route path="/track-order/:id" element={<TrackOrder />} />
+            <Route path="/track-order/:id" element={<TrackOrder />} />
 
-          <Route path="/order-details/:id" element={<OrderDetails />} />
+            <Route path="/order-details/:id" element={<OrderDetails />} />
 
-          <Route path="/faq" element={<FAQ />} />
+            <Route path="/faq" element={<FAQ />} />
 
-          {/* =====================================================
-              LEGAL PAGES
-          ===================================================== */}
+            {/* =====================================================
+                LEGAL PAGES
+            ===================================================== */}
 
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-          <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
 
-          <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
 
-          <Route path="/shipping-policy" element={<ShippingPolicy />} />
+            <Route path="/shipping-policy" element={<ShippingPolicy />} />
 
-          {/* =====================================================
-              ADMIN PANEL
-          ===================================================== */}
+            {/* =====================================================
+                ADMIN PANEL
+            ===================================================== */}
 
-          <Route path="/admin" element={<AdminLayout />}>
-            {/* =========================
-                ADMIN MAIN
-            ========================= */}
+            <Route path="/admin" element={<AdminLayout />}>
+              {/* =========================
+                  ADMIN MAIN
+              ========================= */}
 
-            <Route index element={<Dashboard />} />
+              <Route index element={<Dashboard />} />
 
-            {/* =========================
-                ADMIN ORDERS
-            ========================= */}
+              {/* =========================
+                  ADMIN ORDERS
+              ========================= */}
 
-            <Route path="orders" element={<Orders />} />
+              <Route path="orders" element={<Orders />} />
 
-            {/* =========================
-                ADMIN PRODUCTS
-            ========================= */}
+              {/* =========================
+                  ADMIN PRODUCTS
+              ========================= */}
 
-            <Route path="products" element={<AdminProducts />} />
+              <Route path="products" element={<AdminProducts />} />
 
-            {/* =========================
-                ADMIN CUSTOMERS & STAFF
-            ========================= */}
+              {/* =========================
+                  ADMIN CUSTOMERS & STAFF
+              ========================= */}
 
-            <Route path="customers" element={<CustomersStaff />} />
+              <Route path="customers" element={<CustomersStaff />} />
 
-            {/* =========================
-                ADMIN REFUNDS
-            ========================= */}
+              {/* =========================
+                  ADMIN REFUNDS
+              ========================= */}
 
-            <Route path="refunds" element={<AdminRefunds />} />
+              <Route path="refunds" element={<AdminRefunds />} />
 
-            {/* =================================================
-                FARM OS
-            ================================================= */}
+              {/* =================================================
+                  FARM OS
+              ================================================= */}
 
-            {/* =========================
-                FARM DASHBOARD
-            ========================= */}
+              {/* =========================
+                  FARM DASHBOARD
+              ========================= */}
 
-            <Route path="farm-dashboard" element={<FarmDashboard />} />
+              <Route path="farm-dashboard" element={<FarmDashboard />} />
 
-            {/* =========================
-                BATCH MANAGEMENT
-            ========================= */}
+              {/* =========================
+                  BATCH MANAGEMENT
+              ========================= */}
 
-            <Route path="farm/batches" element={<Batches />} />
+              <Route path="farm/batches" element={<Batches />} />
 
-            {/* =========================
-                CHICKS INWARD
-            ========================= */}
+              {/* =========================
+                  CHICKS INWARD
+              ========================= */}
 
-            <Route path="farm/chicks-inward" element={<ChicksInward />} />
+              <Route path="farm/chicks-inward" element={<ChicksInward />} />
 
-            {/* =========================
-                BIRD STOCK
-            ========================= */}
+              {/* =========================
+                  BIRD STOCK
+              ========================= */}
 
-            <Route path="farm/bird-stock" element={<BirdStock />} />
+              <Route path="farm/bird-stock" element={<BirdStock />} />
 
-            {/* =========================
-                MORTALITY
-            ========================= */}
+              {/* =========================
+                  MORTALITY
+              ========================= */}
 
-            <Route path="farm/mortality" element={<Mortality />} />
+              <Route path="farm/mortality" element={<Mortality />} />
 
-            {/* =========================
-                WEIGHT & GROWTH
-            ========================= */}
+              {/* =========================
+                  WEIGHT & GROWTH
+              ========================= */}
 
-            <Route path="farm/weight-growth" element={<WeightGrowth />} />
+              <Route path="farm/weight-growth" element={<WeightGrowth />} />
 
-            {/* =========================
-                EGG COLLECTION
-            ========================= */}
+              {/* =========================
+                  EGG COLLECTION
+              ========================= */}
 
-            <Route path="farm/egg-collection" element={<EggCollection />} />
+              <Route path="farm/egg-collection" element={<EggCollection />} />
 
-            {/* =========================
-                FEED INVENTORY
-            ========================= */}
+              {/* =========================
+                  FEED INVENTORY
+              ========================= */}
 
-            <Route path="farm/feed-inventory" element={<FeedInventory />} />
+              <Route path="farm/feed-inventory" element={<FeedInventory />} />
 
-            {/* =========================
-                FEED CONSUMPTION
-            ========================= */}
+              {/* =========================
+                  FEED CONSUMPTION
+              ========================= */}
 
-            <Route path="farm/feed-consumption" element={<FeedConsumption />} />
+              <Route path="farm/feed-consumption" element={<FeedConsumption />} />
 
-            {/* =========================
-                MEDICINE & VACCINE
-            ========================= */}
+              {/* =========================
+                  MEDICINE & VACCINE
+              ========================= */}
 
-            <Route path="farm/medicine-vaccine" element={<MedicineVaccine />} />
+              <Route path="farm/medicine-vaccine" element={<MedicineVaccine />} />
 
-            {/* =========================
-                VACCINATION SCHEDULE
-            ========================= */}
+              {/* =========================
+                  VACCINATION SCHEDULE
+              ========================= */}
 
-            <Route path="farm/vaccination-schedule" element={<VaccinationSchedule />} />
+              <Route path="farm/vaccination-schedule" element={<VaccinationSchedule />} />
 
-            {/* =========================
-                VETERINARY LOGS
-            ========================= */}
+              {/* =========================
+                  VETERINARY LOGS
+              ========================= */}
 
-            <Route path="farm/veterinary-logs" element={<VeterinaryLogs />} />
+              <Route path="farm/veterinary-logs" element={<VeterinaryLogs />} />
 
-            {/* =========================
-                WATER QUALITY
-            ========================= */}
+              {/* =========================
+                  WATER QUALITY
+              ========================= */}
 
-            <Route path="farm/water-quality" element={<WaterQuality />} />
+              <Route path="farm/water-quality" element={<WaterQuality />} />
 
-            {/* =========================
-                STAFF ATTENDANCE
-            ========================= */}
+              {/* =========================
+                  STAFF ATTENDANCE
+              ========================= */}
 
-            <Route path="farm/staff-attendance" element={<StaffAttendance />} />
+              <Route path="farm/staff-attendance" element={<StaffAttendance />} />
 
-            {/* =========================
-                FARM TASKS
-            ========================= */}
+              {/* =========================
+                  FARM TASKS
+              ========================= */}
 
-            <Route path="farm/tasks" element={<FarmTasks />} />
+              <Route path="farm/tasks" element={<FarmTasks />} />
 
-            {/* =========================
-                PAYROLL
-            ========================= */}
+              {/* =========================
+                  PAYROLL
+              ========================= */}
 
-            <Route path="farm/payroll" element={<Payroll />} />
+              <Route path="farm/payroll" element={<Payroll />} />
 
-            {/* =========================
-                BIOSECURITY
-            ========================= */}
+              {/* =========================
+                  BIOSECURITY
+              ========================= */}
 
-            <Route path="farm/biosecurity" element={<Biosecurity />} />
+              <Route path="farm/biosecurity" element={<Biosecurity />} />
 
-            {/* =========================
-                SHED MANAGEMENT
-            ========================= */}
+              {/* =========================
+                  SHED MANAGEMENT
+              ========================= */}
 
-            <Route path="farm/sheds" element={<Sheds />} />
-            <Route path="farm/shed-maintenance" element={<ShedManagement />} />
+              <Route path="farm/sheds" element={<Sheds />} />
 
-            {/* =========================
-                SALES & BILLING
-            ========================= */}
+              <Route path="farm/shed-maintenance" element={<ShedManagement />} />
 
-            <Route path="farm/sales" element={<SalesBilling />} />
+              {/* =========================
+                  SALES & BILLING
+              ========================= */}
 
-            {/* =========================
-                FARM REPORTS
-            ========================= */}
+              <Route path="farm/sales" element={<SalesBilling />} />
 
-            <Route path="farm/reports" element={<FarmReports />} />
+              {/* =========================
+                  FARM REPORTS
+              ========================= */}
 
-            {/* =========================
-                FARM EXPENSSES
-            ========================= */}
+              <Route path="farm/reports" element={<FarmReports />} />
 
-            <Route path="/admin/farm/expenses" element={<FarmExpenses />} />
+              {/* =========================
+                  FARM EXPENSES
+              ========================= */}
 
-            {/* =========================
-                FARM CREATE 
-            ========================= */}
+              <Route path="/admin/farm/expenses" element={<FarmExpenses />} />
 
-            <Route path="farm/create-farm" element={<CreateFarms />} />
+              {/* =========================
+                  FARM CREATE
+              ========================= */}
 
-            {/* =========================
-                SETTING
-            ========================= */}
+              <Route path="farm/create-farm" element={<CreateFarms />} />
 
-            <Route path="settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      </main>
+              {/* =========================
+                  SETTINGS
+              ========================= */}
 
-      {/* =========================
-          CUSTOMER FOOTER
-      ========================= */}
-      {!isAdminRoute && <Footer />}
-    </>
+              <Route path="settings" element={<Settings />} />
+
+              {/* =========================
+                  WHAT,S NEW 
+              ========================= */}
+
+              <Route path="/admin/whats-new" element={<WhatsNew />} />
+            </Route>
+          </Routes>
+        </main>
+
+        {/* =========================
+            CUSTOMER FOOTER
+        ========================= */}
+        {!isAdminRoute && <Footer />}
+
+        {/* =========================
+            WHAT'S NEW OVERLAY
+        ========================= */}
+        <WhatsNewOverlay />
+      </>
+    </WhatsNewProvider>
   );
 }
 

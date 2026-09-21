@@ -100,7 +100,7 @@ const Navbar = () => {
 
   const renderDesktopDropdown = (items) => <div className="navbar-dropdown">{renderDropdownItems(items)}</div>;
 
-  const canAccessDashboard = isAuthenticated && user && (user.role === "admin" || (Array.isArray(user.permissions) && user.permissions.includes("dashboard")));
+  const canAccessDashboard = isAuthenticated && user && ["admin", "staff", "fm", "security"].includes(user.role);
 
   return (
     <>

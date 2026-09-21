@@ -81,6 +81,8 @@ const Login = () => {
 
       await showSuccess("Login Successful!", `Welcome back, ${response.user.name}.`);
 
+      window.dispatchEvent(new Event("br30-auth-changed"));
+
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Login failed:", error);

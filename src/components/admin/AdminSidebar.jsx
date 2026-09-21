@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Plus,
   Package,
+  Sparkles,
   ShoppingBag,
   Users,
   UserCog,
@@ -86,6 +87,12 @@ const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
       path: "/admin",
       icon: LayoutDashboard,
       end: true,
+      permission: "dashboard",
+    },
+    {
+      label: "What's New",
+      path: "/admin/whats-new",
+      icon: Sparkles,
       permission: "dashboard",
     },
     {
