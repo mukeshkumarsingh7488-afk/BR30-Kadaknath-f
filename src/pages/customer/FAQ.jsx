@@ -33,7 +33,7 @@ const faqData = [
       },
       {
         question: "Do I need an account to place an order?",
-        answer: "No. BR30 Kadaknath Farms supports guest checkout, so you can place an order without creating an account.",
+        answer: "Yes. You need to create an account and log in to place an order on BR30 Kadaknath Farms. This helps us securely manage your orders, payments, delivery updates, and order history.",
       },
       {
         question: "Can I change my order after placing it?",
