@@ -87,9 +87,9 @@ const permissionList = [
 ];
 
 const defaultPermissions = {
-  staff: ["dashboard"],
-  fm: ["dashboard", "farm-dashboard"],
-  security: ["dashboard", "biosecurity"],
+  staff: [],
+  fm: [],
+  security: [],
 };
 
 const notificationPages = [

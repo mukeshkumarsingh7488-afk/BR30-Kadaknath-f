@@ -365,14 +365,16 @@ const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
           </button>
         </div>
 
-        <button type="button" className="admin-user-mini" onClick={() => navigate("/admin")} title="Go to Admin Dashboard">
-          <div className="admin-avatar">{user?.name?.charAt(0)?.toUpperCase() || "A"}</div>
+        {/*
+<button type="button" className="admin-user-mini" onClick={() => navigate("/admin")} title="Go to Admin Dashboard">
+  <div className="admin-avatar">{user?.name?.charAt(0)?.toUpperCase() || "A"}</div>
 
-          <div className="admin-user-mini-info">
-            <strong>{user?.name || "Admin"}</strong>
-            <span>{user?.role || "admin"}</span>
-          </div>
-        </button>
+  <div className="admin-user-mini-info">
+    <strong>{user?.name || "Admin"}</strong>
+    <span>{user?.role || "admin"}</span>
+  </div>
+</button>
+*/}
 
         <div className="admin-sidebar-scroll">
           {renderSection("MAIN MENU", visibleMenuItems)}
