@@ -13,6 +13,22 @@ const WhatsNewOverlay = () => {
 
   const { popupFeatures, currentFeature, currentIndex, totalFeatures, isOpen, closeWhatsNew, nextFeature, previousFeature, goToFeature, markExplored } = useWhatsNew();
 
+  const getStoredUser = () => {
+    try {
+      const storedUser = localStorage.getItem("br30_user");
+
+      if (!storedUser) return null;
+
+      return JSON.parse(storedUser);
+    } catch {
+      return null;
+    }
+  };
+
+  const user = getStoredUser();
+
+  const isCustomer = user?.role === "customer";
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -111,8 +127,8 @@ const WhatsNewOverlay = () => {
               <img src="/favicon-32x32.png" alt="BR30" className="whats-new-brand-logo" />
 
               <div className="whats-new-brand-text">
-                <strong>What's New</strong>
-                <span>BR30 Farm OS</span>
+                <strong>{isCustomer ? "Your Order Journey" : "What's New"}</strong>
+                <span>{isCustomer ? "BR30 Kadaknath Farms" : "BR30 Farm OS"}</span>
               </div>
             </div>
 
@@ -136,7 +152,7 @@ const WhatsNewOverlay = () => {
               <div className="whats-new-content-inner">
                 <div className="whats-new-content-label">
                   <span className="whats-new-content-label-dot" />
-                  <span>NEW FEATURE</span>
+                  <span>{isCustomer ? "ORDER JOURNEY" : "NEW FEATURE"}</span>
                 </div>
 
                 <h1 id="whats-new-title">{title}</h1>
@@ -195,7 +211,7 @@ const WhatsNewOverlay = () => {
 
                 <div className="whats-new-media-badge">
                   <span />
-                  FEATURE
+                  {isCustomer ? "ORDER JOURNEY" : "FEATURE"}
                 </div>
 
                 {version && <span className="whats-new-media-version">{version.startsWith("v") ? version : `v${version}`}</span>}
@@ -206,8 +222,10 @@ const WhatsNewOverlay = () => {
           {/* FEATURE CARDS */}
           <div className="whats-new-cards-section">
             <div className="whats-new-cards-header">
-              <span>What's New</span>
-              <span>{totalFeatures} Updates</span>
+              <span>{isCustomer ? "Your Order Journey" : "What's New"}</span>
+              <span>
+                {totalFeatures} {isCustomer ? "Steps" : "Updates"}
+              </span>
             </div>
 
             <div className="whats-new-cards-scroll">

@@ -38,6 +38,7 @@ const permissionList = [
   { key: "customers-staff", label: "Customers & Staff", section: "Main" },
 
   { key: "farm-dashboard", label: "Farm Dashboard", section: "Farm OS" },
+  { key: "whats-new", label: "What's New", section: "Farm OS" },
   { key: "farms", label: "Create Farm", section: "Farm OS" },
   { key: "sheds", label: "Shed Management", section: "Farm OS" },
   {
@@ -122,6 +123,11 @@ const notificationPages = [
     key: "farm-dashboard",
     title: "Farm Dashboard",
     description: "Farm overview and important farm alerts.",
+  },
+  {
+    key: "whats-new",
+    title: "What's New",
+    description: "Latest features, updates and improvements in Farm OS.",
   },
   {
     key: "farms",
@@ -288,6 +294,8 @@ const sidebarStyles = [
 
 const Settings = () => {
   const outletContext = useOutletContext();
+
+  const currentUser = JSON.parse(localStorage.getItem("br30_user") || "null");
 
   const theme = outletContext?.theme || "dark";
   const setTheme = outletContext?.setTheme || (() => {});
@@ -757,11 +765,13 @@ const Settings = () => {
             <ChevronRight size={15} />
           </button>
 
-          <button type="button" className={activeTab === "permissions" ? "active" : ""} onClick={() => setActiveTab("permissions")}>
-            <ShieldCheck size={17} />
-            <span>Permissions</span>
-            <ChevronRight size={15} />
-          </button>
+          {currentUser?.role === "admin" && (
+            <button type="button" className={activeTab === "permissions" ? "active" : ""} onClick={() => setActiveTab("permissions")}>
+              <ShieldCheck size={17} />
+              <span>Permissions</span>
+              <ChevronRight size={15} />
+            </button>
+          )}
 
           <button type="button" className={activeTab === "users" ? "active" : ""} onClick={() => setActiveTab("users")}>
             <UsersRound size={17} />

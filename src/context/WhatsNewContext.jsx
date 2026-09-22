@@ -4,6 +4,9 @@ import whatsNewApi from "../api/whatsNewApi";
 
 const WhatsNewContext = createContext(null);
 
+const LOGIN_SESSION_KEY = "br30_login_session";
+const POPUP_SESSION_KEY = "br30_whatsnew_popup_session";
+
 export const WhatsNewProvider = ({ children }) => {
   const [features, setFeatures] = useState([]);
   const [popupFeatures, setPopupFeatures] = useState([]);
@@ -16,9 +19,33 @@ export const WhatsNewProvider = ({ children }) => {
 
   const loadRequestRef = useRef(false);
 
-  // ============================================================
-  // LOAD WHAT'S NEW
-  // ============================================================
+  /* =========================================================
+     SESSION HELPERS
+  ========================================================= */
+
+  const getLoginSessionId = useCallback(() => {
+    return localStorage.getItem(LOGIN_SESSION_KEY) || "";
+  }, []);
+
+  const getPopupSessionId = useCallback(() => {
+    return sessionStorage.getItem(POPUP_SESSION_KEY) || "";
+  }, []);
+
+  const setPopupSessionId = useCallback((sessionId) => {
+    if (!sessionId) {
+      return;
+    }
+
+    sessionStorage.setItem(POPUP_SESSION_KEY, sessionId);
+  }, []);
+
+  const clearPopupSession = useCallback(() => {
+    sessionStorage.removeItem(POPUP_SESSION_KEY);
+  }, []);
+
+  /* =========================================================
+     LOAD WHAT'S NEW
+  ========================================================= */
 
   const loadWhatsNew = useCallback(async () => {
     const token = localStorage.getItem("br30_access_token");
@@ -28,6 +55,7 @@ export const WhatsNewProvider = ({ children }) => {
       setPopupFeatures([]);
       setCurrentIndex(0);
       setIsOpen(false);
+      clearPopupSession();
       return;
     }
 
@@ -43,17 +71,43 @@ export const WhatsNewProvider = ({ children }) => {
 
       const availablePopupFeatures = Array.isArray(response?.popupFeatures) ? response.popupFeatures : [];
 
+      const currentSessionId = getLoginSessionId();
+      const alreadyOpenedInThisSession = currentSessionId && getPopupSessionId() === currentSessionId;
+
+      /*
+       * Backend shouldShow is the primary source.
+       *
+       * Frontend session guard prevents the popup from opening
+       * again after a refresh during the same login session.
+       */
+      let finalPopupFeatures = availablePopupFeatures;
+
+      if (alreadyOpenedInThisSession) {
+        finalPopupFeatures = [];
+      }
+
       setFeatures(allFeatures);
-      setPopupFeatures(availablePopupFeatures);
+      setPopupFeatures(finalPopupFeatures);
       setCurrentIndex(0);
 
       console.log("WHAT'S NEW DEBUG:", {
         allFeatures,
         availablePopupFeatures,
-        popupCount: availablePopupFeatures.length,
+        finalPopupFeatures,
+        popupCount: finalPopupFeatures.length,
+        currentSessionId,
+        alreadyOpenedInThisSession,
       });
 
-      if (availablePopupFeatures.length > 0) {
+      if (finalPopupFeatures.length > 0) {
+        /*
+         * Mark this login session as having opened the popup.
+         *
+         * Refresh ke baad ye same session ID milegi, therefore
+         * popup dobara automatically open nahi hoga.
+         */
+        setPopupSessionId(currentSessionId);
+
         setIsOpen(true);
       } else {
         setIsOpen(false);
@@ -71,22 +125,41 @@ export const WhatsNewProvider = ({ children }) => {
       loadRequestRef.current = false;
       setLoading(false);
     }
-  }, []);
+  }, [clearPopupSession, getLoginSessionId, getPopupSessionId, setPopupSessionId]);
 
-  // ============================================================
-  // INITIAL LOAD + AUTH CHANGE
-  // ============================================================
+  /* =========================================================
+     INITIAL LOAD + AUTH CHANGE
+  ========================================================= */
 
   useEffect(() => {
     let mounted = true;
 
     const handleAuthChanged = async () => {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
-      // Login ke baad token localStorage me save ho chuka hai.
-      // Pehle se running request ko complete hone do, phir fresh data load karo.
+      /*
+       * Logout par AuthContext login session remove karta hai.
+       * Isliye old popup-session marker bhi clear kar do.
+       */
+      const token = localStorage.getItem("br30_access_token");
+
+      if (!token) {
+        clearPopupSession();
+
+        setFeatures([]);
+        setPopupFeatures([]);
+        setCurrentIndex(0);
+        setIsOpen(false);
+
+        return;
+      }
+
       setTimeout(async () => {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
 
         if (loadRequestRef.current) {
           return;
@@ -108,6 +181,8 @@ export const WhatsNewProvider = ({ children }) => {
           }
         }, 150);
       } else {
+        clearPopupSession();
+
         setFeatures([]);
         setPopupFeatures([]);
         setCurrentIndex(0);
@@ -128,19 +203,20 @@ export const WhatsNewProvider = ({ children }) => {
       mounted = false;
 
       window.removeEventListener("br30-auth-changed", handleAuthChanged);
+
       window.removeEventListener("storage", handleStorage);
     };
-  }, [loadWhatsNew]);
+  }, [loadWhatsNew, clearPopupSession]);
 
-  // ============================================================
-  // CURRENT FEATURE
-  // ============================================================
+  /* =========================================================
+     CURRENT FEATURE
+  ========================================================= */
 
   const currentFeature = popupFeatures[currentIndex] || null;
 
-  // ============================================================
-  // UPDATE FEATURE TRACKING LOCALLY
-  // ============================================================
+  /* =========================================================
+     UPDATE FEATURE TRACKING LOCALLY
+  ========================================================= */
 
   const updateFeatureTracking = useCallback((featureId, trackingUpdate) => {
     const updateFeature = (feature) => {
@@ -162,39 +238,44 @@ export const WhatsNewProvider = ({ children }) => {
     setPopupFeatures((previous) => previous.map(updateFeature));
   }, []);
 
-  // ============================================================
-  // MARK VIEWED
-  // ============================================================
+  /* =========================================================
+     MARK VIEWED
+  ========================================================= */
 
   const markViewed = useCallback(
     async (featureId) => {
-      if (!featureId) return false;
+      if (!featureId) {
+        return false;
+      }
 
       try {
-        await whatsNewApi.markViewed(featureId);
+        const response = await whatsNewApi.markViewed(featureId);
 
         updateFeatureTracking(featureId, {
           viewed: true,
-          viewedAt: new Date().toISOString(),
+          viewedAt: response?.view?.viewedAt || new Date().toISOString(),
+          loginSessionId: response?.view?.loginSessionId || getLoginSessionId(),
         });
 
-        return true;
+        return response?.success !== false;
       } catch (err) {
         console.error("What's New mark viewed error:", err);
 
         return false;
       }
     },
-    [updateFeatureTracking]
+    [getLoginSessionId, updateFeatureTracking]
   );
 
-  // ============================================================
-  // MARK EXPLORED
-  // ============================================================
+  /* =========================================================
+     MARK EXPLORED
+  ========================================================= */
 
   const markExplored = useCallback(
     async (featureId) => {
-      if (!featureId) return false;
+      if (!featureId) {
+        return false;
+      }
 
       try {
         const response = await whatsNewApi.markExplored(featureId);
@@ -202,8 +283,9 @@ export const WhatsNewProvider = ({ children }) => {
         updateFeatureTracking(featureId, {
           viewed: true,
           explored: true,
-          viewedAt: new Date().toISOString(),
-          exploredAt: new Date().toISOString(),
+          viewedAt: response?.view?.viewedAt || new Date().toISOString(),
+          exploredAt: response?.view?.exploredAt || new Date().toISOString(),
+          loginSessionId: response?.view?.loginSessionId || getLoginSessionId(),
         });
 
         return response?.success !== false;
@@ -213,12 +295,12 @@ export const WhatsNewProvider = ({ children }) => {
         return false;
       }
     },
-    [updateFeatureTracking]
+    [getLoginSessionId, updateFeatureTracking]
   );
 
-  // ============================================================
-  // OPEN WHAT'S NEW
-  // ============================================================
+  /* =========================================================
+     OPEN WHAT'S NEW
+  ========================================================= */
 
   const openWhatsNew = useCallback(
     (featureId = null) => {
@@ -242,17 +324,17 @@ export const WhatsNewProvider = ({ children }) => {
     [popupFeatures]
   );
 
-  // ============================================================
-  // CLOSE WHAT'S NEW
-  // ============================================================
+  /* =========================================================
+     CLOSE WHAT'S NEW
+  ========================================================= */
 
   const closeWhatsNew = useCallback(() => {
     setIsOpen(false);
   }, []);
 
-  // ============================================================
-  // NEXT FEATURE
-  // ============================================================
+  /* =========================================================
+     NEXT FEATURE
+  ========================================================= */
 
   const nextFeature = useCallback(() => {
     if (popupFeatures.length === 0) {
@@ -268,9 +350,9 @@ export const WhatsNewProvider = ({ children }) => {
     });
   }, [popupFeatures.length]);
 
-  // ============================================================
-  // PREVIOUS FEATURE
-  // ============================================================
+  /* =========================================================
+     PREVIOUS FEATURE
+  ========================================================= */
 
   const previousFeature = useCallback(() => {
     if (popupFeatures.length === 0) {
@@ -286,9 +368,9 @@ export const WhatsNewProvider = ({ children }) => {
     });
   }, [popupFeatures.length]);
 
-  // ============================================================
-  // GO TO SPECIFIC FEATURE
-  // ============================================================
+  /* =========================================================
+     GO TO SPECIFIC FEATURE
+  ========================================================= */
 
   const goToFeature = useCallback(
     (index) => {
@@ -301,22 +383,24 @@ export const WhatsNewProvider = ({ children }) => {
     [popupFeatures.length]
   );
 
-  // ============================================================
-  // OPEN SPECIFIC FEATURE
-  // ============================================================
+  /* =========================================================
+     OPEN SPECIFIC FEATURE
+  ========================================================= */
 
   const openFeature = useCallback(
     (featureId) => {
-      if (!featureId) return;
+      if (!featureId) {
+        return;
+      }
 
       openWhatsNew(featureId);
     },
     [openWhatsNew]
   );
 
-  // ============================================================
-  // AUTO MARK VIEWED WHEN FEATURE OPENS
-  // ============================================================
+  /* =========================================================
+     AUTO MARK VIEWED WHEN FEATURE OPENS
+  ========================================================= */
 
   useEffect(() => {
     if (!isOpen || !currentFeature?._id) {
@@ -330,9 +414,9 @@ export const WhatsNewProvider = ({ children }) => {
     markViewed(currentFeature._id);
   }, [isOpen, currentFeature?._id, currentFeature?.tracking?.viewed, markViewed]);
 
-  // ============================================================
-  // KEYBOARD NAVIGATION
-  // ============================================================
+  /* =========================================================
+     KEYBOARD NAVIGATION
+  ========================================================= */
 
   useEffect(() => {
     if (!isOpen) {
@@ -360,9 +444,9 @@ export const WhatsNewProvider = ({ children }) => {
     };
   }, [isOpen, closeWhatsNew, nextFeature, previousFeature]);
 
-  // ============================================================
-  // RESET INDEX IF DATA CHANGES
-  // ============================================================
+  /* =========================================================
+     RESET INDEX IF DATA CHANGES
+  ========================================================= */
 
   useEffect(() => {
     if (popupFeatures.length === 0) {
@@ -375,9 +459,9 @@ export const WhatsNewProvider = ({ children }) => {
     }
   }, [popupFeatures.length, currentIndex]);
 
-  // ============================================================
-  // CONTEXT VALUE
-  // ============================================================
+  /* =========================================================
+     CONTEXT VALUE
+  ========================================================= */
 
   const value = useMemo(
     () => ({
@@ -418,9 +502,9 @@ export const WhatsNewProvider = ({ children }) => {
   return <WhatsNewContext.Provider value={value}>{children}</WhatsNewContext.Provider>;
 };
 
-// ============================================================
-// HOOK
-// ============================================================
+/* =========================================================
+   HOOK
+========================================================= */
 
 export const useWhatsNew = () => {
   const context = useContext(WhatsNewContext);

@@ -1,16 +1,34 @@
 import apiRequest from "./api";
 
+const LOGIN_SESSION_KEY = "br30_login_session";
+
+const getLoginSessionId = () => {
+  return localStorage.getItem(LOGIN_SESSION_KEY) || "";
+};
+
 const whatsNewApi = {
-  getAvailable: async () => apiRequest("/whats-new"),
+  getAvailable: async () => {
+    const sessionId = getLoginSessionId();
+
+    const query = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : "";
+
+    return apiRequest(`/whats-new${query}`);
+  },
 
   markViewed: async (id) =>
     apiRequest(`/whats-new/${id}/view`, {
       method: "POST",
+      body: JSON.stringify({
+        sessionId: getLoginSessionId(),
+      }),
     }),
 
   markExplored: async (id) =>
     apiRequest(`/whats-new/${id}/explore`, {
       method: "POST",
+      body: JSON.stringify({
+        sessionId: getLoginSessionId(),
+      }),
     }),
 
   getAdminAll: async (params = {}) => {

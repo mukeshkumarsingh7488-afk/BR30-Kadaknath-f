@@ -34,6 +34,8 @@ const Footer = () => {
 
   const user = getStoredUser();
 
+  const isCustomer = user?.role === "customer";
+
   const allowedWhatsNewRoles = ["admin", "staff", "fm", "security", "customer"];
 
   const canViewWhatsNew = user?.role && allowedWhatsNewRoles.includes(user.role);
@@ -140,11 +142,23 @@ const Footer = () => {
           <div className="whats-new-footer-container">
             <div className="whats-new-footer-heading">
               <div className="whats-new-footer-heading-left">
-                <span className="whats-new-footer-label">WHAT'S NEW</span>
+                {isCustomer ? (
+                  <>
+                    <span className="whats-new-footer-label">YOUR ORDER JOURNEY</span>
 
-                <h2>Latest Updates & Features</h2>
+                    <h2>Track Your Order Journey</h2>
 
-                <p>Discover the latest updates, improvements and new features available in BR30 Kadaknath Farms.</p>
+                    <p>Follow your Kadaknath order from order placement to doorstep delivery.</p>
+                  </>
+                ) : (
+                  <>
+                    <span className="whats-new-footer-label">WHAT'S NEW</span>
+
+                    <h2>Latest Updates & Features</h2>
+
+                    <p>Discover the latest updates, improvements and new features available in BR30 Kadaknath Farms.</p>
+                  </>
+                )}
               </div>
 
               <div className="whats-new-footer-controls">
