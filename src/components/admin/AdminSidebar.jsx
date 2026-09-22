@@ -93,7 +93,7 @@ const AdminSidebar = ({ isOpen, onClose, sidebarMode = "normal" }) => {
       label: "What's New",
       path: "/admin/whats-new",
       icon: Sparkles,
-      permission: "dashboard",
+      permission: "what's New",
     },
     {
       label: "Orders",
